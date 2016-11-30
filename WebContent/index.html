@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>刘杰的 聊天室</title>
+<script src="js/jquery-2.1.4.min.js" ></script>
+</head>
+<body>
+	<div>
+		<div id="nameDiv">
+			您的尊姓大名:<input id="name">
+		</div>
+		输入发送的消息:<input type="text" id="message"><br>
+		<input type="button" value="发送消息" onclick="start()" />
+	</div>
+	<div id="messages"></div>
+	<script type="text/javascript">
+		var webSocket = new WebSocket('ws://liujiepro.nat123.net/websocket/websocket');
+
+		webSocket.onerror = function(event) {
+			onError(event)
+		};
+
+		webSocket.onopen = function(event) {
+			onOpen(event)
+		};
+
+		webSocket.onmessage = function(event) {
+			onMessage(event)
+		};
+
+		function onMessage(event) {
+			document.getElementById('messages').innerHTML += '<br/>'
+					+ event.data;
+		}
+
+		function onOpen(event) {
+			document.getElementById('messages').innerHTML = '您已加入....';
+		}
+
+		function onError(event) {
+			alert(event.data);
+			alert("error");
+		}
+
+		function start() {
+			if($.trim($("#name").val()) != ""){
+				if($("#message").val() != ""){
+					//发送消息
+					webSocket.send("昵称为:" + $("#name").val() + " 发送了消息:" + $("#message").val());
+					$("#message").val("");
+					$("#nameDiv").hide();
+					return false;
+				}else{
+					alert("请输入内容");
+				}
+			}else{
+				alert("请输入您的昵称");
+			}
+		}
+	</script>
+</body>
+</html>
